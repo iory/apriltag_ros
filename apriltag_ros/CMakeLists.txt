@@ -49,6 +49,8 @@ add_compile_options("-O3" "-funsafe-loop-optimizations" "-fsee" "-funroll-loops"
 
 add_message_files(
   FILES
+  AprilTagCornerDetection.msg
+  AprilTagCornerDetectionArray.msg
   AprilTagDetection.msg
   AprilTagDetectionArray.msg
 )
