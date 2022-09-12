@@ -594,6 +594,53 @@ void TagDetector::drawDetections (cv_bridge::CvImagePtr image)
   }
 }
 
+
+AprilTagCornerDetectionArray TagDetector::getDetectedCorners ()
+{
+  AprilTagCornerDetectionArray tag_corner_detection_array;
+  for (int i = 0; i < zarray_size(detections_); i++)
+  {
+    apriltag_detection_t *det;
+    zarray_get(detections_, i, &det);
+
+    // Check if this ID is present in config/tags.yaml
+    // Check if is part of a tag bundle
+    int tagID = det->id;
+    bool is_part_of_bundle = false;
+    for (unsigned int j=0; j<tag_bundle_descriptions_.size(); j++)
+    {
+      TagBundleDescription bundle = tag_bundle_descriptions_[j];
+      if (bundle.id2idx_.find(tagID) != bundle.id2idx_.end())
+      {
+        is_part_of_bundle = true;
+        break;
+      }
+    }
+    // If not part of a bundle, check if defined as a standalone tag
+    StandaloneTagDescription* standaloneDescription;
+    if (!is_part_of_bundle &&
+        !findStandaloneTagDescription(tagID, standaloneDescription, false))
+    {
+      // Neither a standalone tag nor part of a bundle, so this is a "rogue"
+      // tag, skip it.
+      continue;
+    }
+
+    AprilTagCornerDetection tag_detection;
+    tag_detection.id.push_back(tagID);
+    tag_detection.corners.push_back(det->p[1][0]);
+    tag_detection.corners.push_back(det->p[1][1]);
+    tag_detection.corners.push_back(det->p[2][0]);
+    tag_detection.corners.push_back(det->p[2][1]);
+    tag_detection.corners.push_back(det->p[3][0]);
+    tag_detection.corners.push_back(det->p[3][1]);
+    tag_detection.corners.push_back(det->p[0][0]);
+    tag_detection.corners.push_back(det->p[0][1]);
+    tag_corner_detection_array.detections.push_back(tag_detection);
+  }
+  return tag_corner_detection_array;
+}
+
 // Parse standalone tag descriptions
 std::map<int, StandaloneTagDescription> TagDetector::parseStandaloneTags (
     XmlRpc::XmlRpcValue& standalone_tags)

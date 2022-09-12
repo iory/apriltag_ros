@@ -57,6 +57,8 @@ void ContinuousDetector::onInit ()
                           image_transport::TransportHints(transport_hint));
   tag_detections_publisher_ =
       nh.advertise<AprilTagDetectionArray>("tag_detections", 1);
+  tag_corner_detections_publisher_ =
+    nh.advertise<AprilTagCornerDetectionArray>("tag_corner_detections", 1);
   if (draw_tag_detections_image_)
   {
     tag_detections_image_publisher_ = it_->advertise("tag_detections_image", 1);
@@ -93,6 +95,9 @@ void ContinuousDetector::imageCallback (
   // Publish detected tags in the image by AprilTag 2
   tag_detections_publisher_.publish(
       tag_detector_->detectTags(cv_image_,camera_info));
+  AprilTagCornerDetectionArray tag_corner_detection_array = tag_detector_->getDetectedCorners();
+  tag_corner_detection_array.header = camera_info->header;
+  tag_corner_detections_publisher_.publish(tag_corner_detection_array);
 
   // Publish the camera image overlaid by outlines of the detected tags and
   // their payload values

@@ -72,6 +72,7 @@ class ContinuousDetector: public nodelet::Nodelet
   image_transport::CameraSubscriber camera_image_subscriber_;
   image_transport::Publisher tag_detections_image_publisher_;
   ros::Publisher tag_detections_publisher_;
+  ros::Publisher tag_corner_detections_publisher_;
 };
 
 } // namespace apriltag_ros

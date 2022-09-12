@@ -64,6 +64,8 @@
 
 #include <apriltag.h>
 
+#include "apriltag_ros/AprilTagCornerDetection.h"
+#include "apriltag_ros/AprilTagCornerDetectionArray.h"
 #include "apriltag_ros/AprilTagDetection.h"
 #include "apriltag_ros/AprilTagDetectionArray.h"
 
@@ -189,6 +191,8 @@ class TagDetector
 
   TagDetector(ros::NodeHandle pnh);
   ~TagDetector();
+
+  AprilTagCornerDetectionArray getDetectedCorners();
 
   // Store standalone and bundle tag descriptions
   std::map<int, StandaloneTagDescription> parseStandaloneTags(
